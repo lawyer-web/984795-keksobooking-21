@@ -109,3 +109,7 @@ for (let post of posts) {
   pinsFragment.appendChild(clonedPinTemplate);
 }
 pinMap.appendChild(pinsFragment);
+
+// Задание №2
+
+
