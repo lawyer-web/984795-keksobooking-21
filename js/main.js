@@ -96,11 +96,10 @@ const posts = generatePosts();
 const activeMap = ()=> {
   map.classList.remove(`map--faded`);
 };
-activeMap();
 
 /* 7. Функция сoздания метки случайного объявления */
-
-const pinsFragment = document.createDocumentFragment();
+const fillMap = function () {
+  const pinsFragment = document.createDocumentFragment();
 for (let post of posts) {
   const clonedPinTemplate = pinTemplate.cloneNode(true);
   clonedPinTemplate.style = `left:${post.location.x + Pin.WIDTH / 2}px; top:${post.location.y + Pin.HEIGHT}px;`;
@@ -109,17 +108,18 @@ for (let post of posts) {
   pinsFragment.appendChild(clonedPinTemplate);
 }
 pinMap.appendChild(pinsFragment);
+};
 
+// Второе задание
 
-/* Новый элемент с заданным атрибутом class */
-
+//  Новый элемент с заданным атрибутом class
 const createElem = (elemName, elemClass)=> {
   const newElement = document.createElement(elemName);
   newElement.className = elemClass;
   return newElement;
 };
 
-/* Новый элемент img с заданными атрибутами  */
+//  Новый элемент img с заданными атрибутами
 const createImg = (src, width, height, alt, elemClass)=> {
   const newImg = createElem(`img`, elemClass);
   newImg.src = src;
@@ -129,8 +129,7 @@ const createImg = (src, width, height, alt, elemClass)=> {
   return newImg;
 };
 
-/* Переименовывание типов жилья */
-
+// Переименовывание типов жилья
 const translateType = (type)=> {
   switch (type) {
     case `palace`:
@@ -146,8 +145,7 @@ const translateType = (type)=> {
   }
 };
 
-/* Коллекция фотографий жилья */
-
+//  Коллекция фотографий жилья
 const createAlbum = (items)=> {
   const fragment = document.createDocumentFragment();
 
@@ -160,8 +158,7 @@ const createAlbum = (items)=> {
   return fragment;
 };
 
-/* Коллекция опций */
-
+//  Коллекция опций
 const createFeautures = (items)=> {
   const fragment = document.createDocumentFragment();
   for (let element of items) {
@@ -173,18 +170,16 @@ const createFeautures = (items)=> {
   return fragment;
 };
 
-/* Заполнение данными карточки объявления */
-
+// Заполнение данными карточки объявления
 const fillCard = (obj) =>{
   const defaultCard = document.querySelector(`#card`).content.querySelector(`.map__card`);
   const postCard = defaultCard.cloneNode(true);
 
-  /* Блок для фотографий */
+  //  Блок для фотографий
   const album = postCard.querySelector(`.popup__photos`);
   album.textContent = ` `;
 
-  /* Блок для списка опций */
-
+  //  Блок для списка опций
   const feauturesList = postCard.querySelector(`.popup__features `);
   feauturesList.textContent = ` `;
   postCard.querySelector(`.popup__title`).textContent = obj.offer.title;
@@ -199,8 +194,126 @@ const fillCard = (obj) =>{
   postCard.querySelector(`.popup__avatar`).setAttribute(`src`, obj.author.avatar);
   return postCard;
 };
-/* Отрисовывает карточку объявления */
+//  Отрисовывает карточку объявления (Метод отрисовки карточки)
 const createCard = (obj)=> {
   pinMap.parentNode.insertBefore(fillCard(obj), pinMap.nextSibling);
 };
-createCard(posts[0]);
+
+// Третье задание
+const ENTER_KEYCODE = 13;
+const MAIN_PIN_WIDTH = 62;
+const MAIN_PIN_HEIGHT = 62;
+const TAIL_OF_MAIN_PIN_HEIGHT = 22;
+
+// главная метка для перевода в активное состояние
+const mainPin = map.querySelector(`.map__pin--main`);
+
+// форма объявления
+const form = document.querySelector(`.ad-form `);
+// console.log(form);
+
+// кнопка отправки формы
+const formSubmit = form.querySelector(`.ad-form__submit`);
+// console.log(formSubmit)
+
+// input для ввода адреса
+const adressInput = document.querySelector(`#address`);
+
+// отключение активных полей
+const formHeader = document.querySelector(`.ad-form-header`).setAttribute(`disabled`, `true`);
+
+const adFormElement = document.querySelectorAll(`.ad-form__element`);
+for (let element of adFormElement) {
+  // console.log(element);
+  element.setAttribute(`disabled`, true);
+}
+
+// недоступные элементы формы в исходном состоянии
+const formDisabledElements = form.querySelectorAll(`[disabled]`);
+// console.log(formDisabledElements);
+
+// активирование формы
+const formActivation = () => {
+  form.classList.remove(`ad-form--disabled`);
+  removeDisabledAttr(formDisabledElements);
+  fillAddressInput(getMainPinPosition());
+};
+
+// функция активации страницы
+const activatePage = () =>{
+  activeMap();
+  fillMap(posts);
+  createCard(posts[0]);
+  formActivation();
+  createCard(posts[0]);
+
+};
+
+// добавляю обработчик события mousedown на элемент .map__pin--main
+mainPin.addEventListener(`mousedown`, function () {
+  console.log(`Кнопка нажaта`);
+  activatePage();
+
+});
+
+// нахожу координаты главный метки
+const getMainPinPosition = ()=> {
+  const coordinates = {
+    'x': Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2),
+    'y': Math.round(mainPin.offsetTop + MAIN_PIN_HEIGHT / 2)
+  };
+  if (!map.classList.contains(`map--faded`)) {
+    coordinates.y = coordinates.y + TAIL_OF_MAIN_PIN_HEIGHT;
+  }
+  return coordinates;
+};
+
+// заполняю поля адреса с координатами метки
+const fillAddressInput = function (obj) {
+  adressInput.value = obj.x + `,` + obj.y;
+  console.log(obj);
+};
+
+// удаление атрибута disabled
+const removeDisabledAttr = function (items) {
+  for (let i = 0; i < items.length; i++) {
+    items[i].disabled = false;
+  }
+};
+
+// перевод страницы в активный режим с клавиатуры.
+mainPin.addEventListener(`keydown`, (evt)=> {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activatePage();
+
+  }
+});
+
+// количество комнат
+const numberRoomsSelect = document.querySelector(`#room_number`);
+
+// количество гостей(мест)
+const numberQuestsSelect = document.querySelector(`#capacity`);
+
+// Сравниваю количество комнат с количеством гостей
+const compareRoomsAndQuests = () => {
+  const numberRooms = parseInt(numberRoomsSelect.value, 10);
+  const numberQuests = parseInt(numberQuestsSelect.value, 10);
+  const mismatch = ` `;
+  if (numberRooms === 1 && numberQuests !== 1) {
+    mismatch = `1 комната - для 1 гостя`;
+  } else if (numberRooms === 2 && (numberQuests !== 1 && numberQuests !== 1)) {
+    mismatch = `2 комнаты — для 2 гостей или для 1 гостя`;
+  } else if (numberRooms === 3 && numberQuests !== 0) {
+    mismatch = `3 комнаты — для 3 гостей, для 2 гостей или для 1 гостя`;
+  } else if (numberRooms === 100 && numberQuests !== 0) {
+    mismatch = `100 комнат — не для гостей`;
+  }
+  return mismatch;
+};
+
+formSubmit.addEventListener(`click`, function () {
+  numberQuestsSelect.setCustomValidity(compareRoomsAndQuests());
+});
+
+fillAddressInput(getMainPinPosition());
