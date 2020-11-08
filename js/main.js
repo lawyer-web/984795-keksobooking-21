@@ -1,5 +1,7 @@
 'use strict';
 
+// Task 1
+
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 
 const TIMES = [`12:00`, `13:00`, `14:00`];
@@ -17,15 +19,15 @@ const map = document.querySelector(`.map`);
 const pinMap = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
-/* 1.Функция генерации случайного числа */
+//  Функция генерации случайного числа
 
 const getRandomInt = (min, max)=>Math.floor(Math.random() * (max - min + 1)) + min;
 
-/* 2.Функция выбора случайного элемента массива */
+//  Функция выбора случайного элемента массива
 
 const getRandomElement = (items)=>items[getRandomInt(0, items.length - 1)];
 
-/* 3. Функция перетасовки массива */
+//  Функция перетасовки массива
 
 const getMixArr = (items)=> {
   return items.slice().sort(function () {
@@ -33,7 +35,7 @@ const getMixArr = (items)=> {
   });
 };
 
-/* 4.Функция генерации объекта с объявлением */
+//  Функция генерации объекта с объявлением
 
 const Price = {
   MIN: 1000,
@@ -82,7 +84,7 @@ const generatePost = (number) => {
   return post;
 };
 
-//  5.Функция создания массива случайных объявлений
+//  Функция создания массива случайных объявлений
 const generatePosts = ()=> {
   const data = [];
   for (let i = 1; i <= 8; i++) {
@@ -92,12 +94,12 @@ const generatePosts = ()=> {
 };
 const posts = generatePosts();
 
-//  6. Функция переключения карты в активное состояние
+//   Функция переключения карты в активное состояние
 const activeMap = ()=> {
   map.classList.remove(`map--faded`);
 };
 
-//  7. Функция сoздания метки случайного объявления
+//   Функция сoздания метки случайного объявления
 const fillMap = function () {
   const pinsFragment = document.createDocumentFragment();
   for (let post of posts) {
@@ -110,7 +112,7 @@ const fillMap = function () {
   pinMap.appendChild(pinsFragment);
 };
 
-// Второе задание
+// Task-2
 
 //  Новый элемент с заданным атрибутом class
 const createElem = (elemName, elemClass)=> {
@@ -199,7 +201,7 @@ const createCard = (obj)=> {
   pinMap.parentNode.insertBefore(fillCard(obj), pinMap.nextSibling);
 };
 
-// Третье задание
+// Тask-3
 const ENTER_KEYCODE = 13;
 const MAIN_PIN_WIDTH = 62;
 const MAIN_PIN_HEIGHT = 62;
@@ -300,9 +302,27 @@ mainPin.addEventListener(`keydown`, (evt)=> {
 });
 
 formSubmit.addEventListener(`click`, function () {
-  // evt.preventDefault();
   numberQuestsSelect.setCustomValidity(compareRoomsAndQuests());
   numberQuestsSelect.reportValidity();
 });
 
 fillAddressInput(getMainPinPosition());
+
+//  Task-4
+
+// карточка объявления
+const card = map.querySelector('.map__card');
+
+// активная метка
+const activePin = document.querySelector(`.map__pin--main`);
+// console.log(activePin);
+
+// деактивация ранее активной метки
+if (activePin) {
+  activePin.classList.remove(`map__pin--main`);
+}
+
+// кнопка закрытия карточки
+const cardClose = card.querySelector(`.popup__close`);
+
+
