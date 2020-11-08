@@ -210,27 +210,21 @@ const mainPin = map.querySelector(`.map__pin--main`);
 
 // форма объявления
 const form = document.querySelector(`.ad-form `);
-// console.log(form);
 
 // кнопка отправки формы
 const formSubmit = form.querySelector(`.ad-form__submit`);
-// console.log(formSubmit)
-
-// input для ввода адреса
-const adressInput = document.querySelector(`#address`);
-
-// отключение активных полей
-const formHeader = document.querySelector(`.ad-form-header`).setAttribute(`disabled`, `true`);
-
-const adFormElement = document.querySelectorAll(`.ad-form__element`);
-for (let element of adFormElement) {
-  // console.log(element);
-  element.setAttribute(`disabled`, true);
-}
 
 // недоступные элементы формы в исходном состоянии
 const formDisabledElements = form.querySelectorAll(`[disabled]`);
-// console.log(formDisabledElements);
+
+// количество комнат
+const numberRoomsSelect = document.querySelector(`#room_number`);
+
+// количество гостей(мест)
+const numberQuestsSelect = document.querySelector(`#capacity`);
+
+// input для ввода адреса
+const adressInput = document.querySelector(`#address`);
 
 // активирование формы
 const formActivation = () => {
@@ -238,23 +232,6 @@ const formActivation = () => {
   removeDisabledAttr(formDisabledElements);
   fillAddressInput(getMainPinPosition());
 };
-
-// функция активации страницы
-const activatePage = () =>{
-  activeMap();
-  fillMap(posts);
-  createCard(posts[0]);
-  formActivation();
-  createCard(posts[0]);
-
-};
-
-// добавляю обработчик события mousedown на элемент .map__pin--main
-mainPin.addEventListener(`mousedown`, function () {
-  console.log(`Кнопка нажaта`);
-  activatePage();
-
-});
 
 // нахожу координаты главный метки
 const getMainPinPosition = ()=> {
@@ -271,7 +248,6 @@ const getMainPinPosition = ()=> {
 // заполняю поля адреса с координатами метки
 const fillAddressInput = function (obj) {
   adressInput.value = obj.x + `,` + obj.y;
-  console.log(obj);
 };
 
 // удаление атрибута disabled
@@ -281,25 +257,11 @@ const removeDisabledAttr = function (items) {
   }
 };
 
-// перевод страницы в активный режим с клавиатуры.
-mainPin.addEventListener(`keydown`, (evt)=> {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    activatePage();
-
-  }
-});
-
-// количество комнат
-const numberRoomsSelect = document.querySelector(`#room_number`);
-
-// количество гостей(мест)
-const numberQuestsSelect = document.querySelector(`#capacity`);
-
 // Сравниваю количество комнат с количеством гостей
 const compareRoomsAndQuests = () => {
   const numberRooms = parseInt(numberRoomsSelect.value, 10);
   const numberQuests = parseInt(numberQuestsSelect.value, 10);
-  const mismatch = ` `;
+  let mismatch = ``;
   if (numberRooms === 1 && numberQuests !== 1) {
     mismatch = `1 комната - для 1 гостя`;
   } else if (numberRooms === 2 && (numberQuests !== 1 && numberQuests !== 1)) {
@@ -309,11 +271,39 @@ const compareRoomsAndQuests = () => {
   } else if (numberRooms === 100 && numberQuests !== 0) {
     mismatch = `100 комнат — не для гостей`;
   }
+  console.log(mismatch);
   return mismatch;
 };
 
+// функция активации страницы
+const activatePage = () =>{
+  activeMap();
+  fillMap(posts);
+  createCard(posts[0]);
+  formActivation();
+  createCard(posts[0]);
+
+};
+
+// добавляю обработчик события mousedown на элемент .map__pin--main
+mainPin.addEventListener(`mousedown`, ()=> {
+  // console.log(`Кнопка нажaта`);
+  activatePage();
+
+});
+
+// перевод страницы в активный режим с клавиатуры.
+mainPin.addEventListener(`keydown`, (evt)=> {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activatePage();
+
+  }
+});
+
 formSubmit.addEventListener(`click`, function () {
+  // evt.preventDefault();
   numberQuestsSelect.setCustomValidity(compareRoomsAndQuests());
+  numberQuestsSelect.reportValidity();
 });
 
 fillAddressInput(getMainPinPosition());
