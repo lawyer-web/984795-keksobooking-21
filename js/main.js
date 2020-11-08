@@ -82,7 +82,7 @@ const generatePost = (number) => {
   return post;
 };
 
-/* 5.Функция создания массива случайных объявлений */
+//  5.Функция создания массива случайных объявлений
 const generatePosts = ()=> {
   const data = [];
   for (let i = 1; i <= 8; i++) {
@@ -92,22 +92,22 @@ const generatePosts = ()=> {
 };
 const posts = generatePosts();
 
-/* 6. Функция переключения карты в активное состояние */
+//  6. Функция переключения карты в активное состояние
 const activeMap = ()=> {
   map.classList.remove(`map--faded`);
 };
 
-/* 7. Функция сoздания метки случайного объявления */
+//  7. Функция сoздания метки случайного объявления
 const fillMap = function () {
   const pinsFragment = document.createDocumentFragment();
-for (let post of posts) {
-  const clonedPinTemplate = pinTemplate.cloneNode(true);
-  clonedPinTemplate.style = `left:${post.location.x + Pin.WIDTH / 2}px; top:${post.location.y + Pin.HEIGHT}px;`;
-  clonedPinTemplate.querySelector(`img`).setAttribute(`src`, post.author.avatar);
-  clonedPinTemplate.querySelector(`img`).setAttribute(`alt`, post.offer.title);
-  pinsFragment.appendChild(clonedPinTemplate);
-}
-pinMap.appendChild(pinsFragment);
+  for (let post of posts) {
+    const clonedPinTemplate = pinTemplate.cloneNode(true);
+    clonedPinTemplate.style = `left:${post.location.x + Pin.WIDTH / 2}px; top:${post.location.y + Pin.HEIGHT}px;`;
+    clonedPinTemplate.querySelector(`img`).setAttribute(`src`, post.author.avatar);
+    clonedPinTemplate.querySelector(`img`).setAttribute(`alt`, post.offer.title);
+    pinsFragment.appendChild(clonedPinTemplate);
+  }
+  pinMap.appendChild(pinsFragment);
 };
 
 // Второе задание
@@ -264,14 +264,13 @@ const compareRoomsAndQuests = () => {
   let mismatch = ``;
   if (numberRooms === 1 && numberQuests !== 1) {
     mismatch = `1 комната - для 1 гостя`;
-  } else if (numberRooms === 2 && (numberQuests !== 1 && numberQuests !== 1)) {
+  } else if (numberRooms === 2 && (numberQuests !== 1 && numberQuests !== 2)) {
     mismatch = `2 комнаты — для 2 гостей или для 1 гостя`;
-  } else if (numberRooms === 3 && numberQuests !== 0) {
+  } else if (numberRooms === 3 && (numberQuests !== 1 && numberQuests !== 2 && numberQuests !== 3)) {
     mismatch = `3 комнаты — для 3 гостей, для 2 гостей или для 1 гостя`;
   } else if (numberRooms === 100 && numberQuests !== 0) {
     mismatch = `100 комнат — не для гостей`;
   }
-  console.log(mismatch);
   return mismatch;
 };
 
