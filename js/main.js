@@ -98,9 +98,9 @@ const activeMap = ()=> {
 };
 
 //  7. Функция сoздания метки случайного объявления
-const fillMap = function () {
+const fillMap = ()=> {
   const pinsFragment = document.createDocumentFragment();
-  for (let post of posts) {
+  for (const post of posts) {
     const clonedPinTemplate = pinTemplate.cloneNode(true);
     clonedPinTemplate.style = `left:${post.location.x + Pin.WIDTH / 2}px; top:${post.location.y + Pin.HEIGHT}px;`;
     clonedPinTemplate.querySelector(`img`).setAttribute(`src`, post.author.avatar);
@@ -149,7 +149,7 @@ const translateType = (type)=> {
 const createAlbum = (items)=> {
   const fragment = document.createDocumentFragment();
 
-  for (let item of items) {
+  for (const item of items) {
     const photo = createImg(item, 45, 40, `Фотография жилья`, `popup__photo`);
     photo.className = `popup__photo`;
     fragment.appendChild(photo);
@@ -161,7 +161,7 @@ const createAlbum = (items)=> {
 //  Коллекция опций
 const createFeautures = (items)=> {
   const fragment = document.createDocumentFragment();
-  for (let element of items) {
+  for (const element of items) {
     const feauture = createElem(element, `li`, `popup__feature popup__feature-- ${items[items]} `);
     feauture.className = `popup__feature popup__feature-- ${items[items]} `;
     fragment.appendChild(feauture);
@@ -200,7 +200,6 @@ const createCard = (obj)=> {
 };
 
 // Третье задание
-const ENTER_KEYCODE = 13;
 const MAIN_PIN_WIDTH = 62;
 const MAIN_PIN_HEIGHT = 62;
 const TAIL_OF_MAIN_PIN_HEIGHT = 22;
@@ -229,15 +228,15 @@ const adressInput = document.querySelector(`#address`);
 // активирование формы
 const formActivation = () => {
   form.classList.remove(`ad-form--disabled`);
-  removeDisabledAttr(formDisabledElements);
+  removeDisabledAttribute(formDisabledElements);
   fillAddressInput(getMainPinPosition());
 };
 
 // нахожу координаты главный метки
 const getMainPinPosition = ()=> {
   const coordinates = {
-    'x': Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2),
-    'y': Math.round(mainPin.offsetTop + MAIN_PIN_HEIGHT / 2)
+    x: Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2),
+    y: Math.round(mainPin.offsetTop + MAIN_PIN_HEIGHT / 2)
   };
   if (!map.classList.contains(`map--faded`)) {
     coordinates.y = coordinates.y + TAIL_OF_MAIN_PIN_HEIGHT;
@@ -246,14 +245,14 @@ const getMainPinPosition = ()=> {
 };
 
 // заполняю поля адреса с координатами метки
-const fillAddressInput = function (obj) {
+const fillAddressInput = (obj)=> {
   adressInput.value = obj.x + `,` + obj.y;
 };
 
 // удаление атрибута disabled
-const removeDisabledAttr = function (items) {
-  for (let i = 0; i < items.length; i++) {
-    items[i].disabled = false;
+const removeDisabledAttribute = (items)=> {
+  for (const element of items) {
+    element[items].disabled = false;
   }
 };
 
@@ -280,26 +279,13 @@ const activatePage = () =>{
   fillMap(posts);
   createCard(posts[0]);
   formActivation();
-  createCard(posts[0]);
-
 };
 
-// добавляю обработчик события mousedown на элемент .map__pin--main
-mainPin.addEventListener(`mousedown`, ()=> {
-  // console.log(`Кнопка нажaта`);
+mainPin.addEventListener(`click`, ()=> {
   activatePage();
-
 });
 
-// перевод страницы в активный режим с клавиатуры.
-mainPin.addEventListener(`keydown`, (evt)=> {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    activatePage();
-
-  }
-});
-
-formSubmit.addEventListener(`click`, function () {
+formSubmit.addEventListener(`click`, ()=> {
   // evt.preventDefault();
   numberQuestsSelect.setCustomValidity(compareRoomsAndQuests());
   numberQuestsSelect.reportValidity();
