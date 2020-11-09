@@ -82,7 +82,7 @@ const generatePost = (number) => {
   return post;
 };
 
-/* 5.Функция создания массива случайных объявлений */
+//  5.Функция создания массива случайных объявлений
 const generatePosts = ()=> {
   const data = [];
   for (let i = 1; i <= 8; i++) {
@@ -92,34 +92,34 @@ const generatePosts = ()=> {
 };
 const posts = generatePosts();
 
-/* 6. Функция переключения карты в активное состояние */
+//  6. Функция переключения карты в активное состояние
 const activeMap = ()=> {
   map.classList.remove(`map--faded`);
 };
-activeMap();
 
-/* 7. Функция сoздания метки случайного объявления */
+//  7. Функция сoздания метки случайного объявления
+const fillMap = ()=> {
+  const pinsFragment = document.createDocumentFragment();
+  for (const post of posts) {
+    const clonedPinTemplate = pinTemplate.cloneNode(true);
+    clonedPinTemplate.style = `left:${post.location.x + Pin.WIDTH / 2}px; top:${post.location.y + Pin.HEIGHT}px;`;
+    clonedPinTemplate.querySelector(`img`).setAttribute(`src`, post.author.avatar);
+    clonedPinTemplate.querySelector(`img`).setAttribute(`alt`, post.offer.title);
+    pinsFragment.appendChild(clonedPinTemplate);
+  }
+  pinMap.appendChild(pinsFragment);
+};
 
-const pinsFragment = document.createDocumentFragment();
-for (let post of posts) {
-  const clonedPinTemplate = pinTemplate.cloneNode(true);
-  clonedPinTemplate.style = `left:${post.location.x + Pin.WIDTH / 2}px; top:${post.location.y + Pin.HEIGHT}px;`;
-  clonedPinTemplate.querySelector(`img`).setAttribute(`src`, post.author.avatar);
-  clonedPinTemplate.querySelector(`img`).setAttribute(`alt`, post.offer.title);
-  pinsFragment.appendChild(clonedPinTemplate);
-}
-pinMap.appendChild(pinsFragment);
+// Второе задание
 
-
-/* Новый элемент с заданным атрибутом class */
-
+//  Новый элемент с заданным атрибутом class
 const createElem = (elemName, elemClass)=> {
   const newElement = document.createElement(elemName);
   newElement.className = elemClass;
   return newElement;
 };
 
-/* Новый элемент img с заданными атрибутами  */
+//  Новый элемент img с заданными атрибутами
 const createImg = (src, width, height, alt, elemClass)=> {
   const newImg = createElem(`img`, elemClass);
   newImg.src = src;
@@ -129,8 +129,7 @@ const createImg = (src, width, height, alt, elemClass)=> {
   return newImg;
 };
 
-/* Переименовывание типов жилья */
-
+// Переименовывание типов жилья
 const translateType = (type)=> {
   switch (type) {
     case `palace`:
@@ -146,12 +145,11 @@ const translateType = (type)=> {
   }
 };
 
-/* Коллекция фотографий жилья */
-
+//  Коллекция фотографий жилья
 const createAlbum = (items)=> {
   const fragment = document.createDocumentFragment();
 
-  for (let item of items) {
+  for (const item of items) {
     const photo = createImg(item, 45, 40, `Фотография жилья`, `popup__photo`);
     photo.className = `popup__photo`;
     fragment.appendChild(photo);
@@ -160,11 +158,10 @@ const createAlbum = (items)=> {
   return fragment;
 };
 
-/* Коллекция опций */
-
+//  Коллекция опций
 const createFeautures = (items)=> {
   const fragment = document.createDocumentFragment();
-  for (let element of items) {
+  for (const element of items) {
     const feauture = createElem(element, `li`, `popup__feature popup__feature-- ${items[items]} `);
     feauture.className = `popup__feature popup__feature-- ${items[items]} `;
     fragment.appendChild(feauture);
@@ -173,18 +170,16 @@ const createFeautures = (items)=> {
   return fragment;
 };
 
-/* Заполнение данными карточки объявления */
-
+// Заполнение данными карточки объявления
 const fillCard = (obj) =>{
   const defaultCard = document.querySelector(`#card`).content.querySelector(`.map__card`);
   const postCard = defaultCard.cloneNode(true);
 
-  /* Блок для фотографий */
+  //  Блок для фотографий
   const album = postCard.querySelector(`.popup__photos`);
   album.textContent = ` `;
 
-  /* Блок для списка опций */
-
+  //  Блок для списка опций
   const feauturesList = postCard.querySelector(`.popup__features `);
   feauturesList.textContent = ` `;
   postCard.querySelector(`.popup__title`).textContent = obj.offer.title;
@@ -199,8 +194,101 @@ const fillCard = (obj) =>{
   postCard.querySelector(`.popup__avatar`).setAttribute(`src`, obj.author.avatar);
   return postCard;
 };
-/* Отрисовывает карточку объявления */
+//  Отрисовывает карточку объявления (Метод отрисовки карточки)
 const createCard = (obj)=> {
   pinMap.parentNode.insertBefore(fillCard(obj), pinMap.nextSibling);
 };
-createCard(posts[0]);
+
+// Третье задание
+const MAIN_PIN_WIDTH = 62;
+const MAIN_PIN_HEIGHT = 62;
+const TAIL_OF_MAIN_PIN_HEIGHT = 22;
+
+// главная метка для перевода в активное состояние
+const mainPin = map.querySelector(`.map__pin--main`);
+
+// форма объявления
+const form = document.querySelector(`.ad-form `);
+
+// кнопка отправки формы
+const formSubmit = form.querySelector(`.ad-form__submit`);
+
+// недоступные элементы формы в исходном состоянии
+const formDisabledElements = form.querySelectorAll(`[disabled]`);
+
+// количество комнат
+const numberRoomsSelect = document.querySelector(`#room_number`);
+
+// количество гостей(мест)
+const numberQuestsSelect = document.querySelector(`#capacity`);
+
+// input для ввода адреса
+const adressInput = document.querySelector(`#address`);
+
+// активирование формы
+const formActivation = () => {
+  form.classList.remove(`ad-form--disabled`);
+  removeDisabledAttribute(formDisabledElements);
+  fillAddressInput(getMainPinPosition());
+};
+
+// нахожу координаты главный метки
+const getMainPinPosition = ()=> {
+  const coordinates = {
+    x: Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH / 2),
+    y: Math.round(mainPin.offsetTop + MAIN_PIN_HEIGHT / 2)
+  };
+  if (!map.classList.contains(`map--faded`)) {
+    coordinates.y = coordinates.y + TAIL_OF_MAIN_PIN_HEIGHT;
+  }
+  return coordinates;
+};
+
+// заполняю поля адреса с координатами метки
+const fillAddressInput = (obj)=> {
+  adressInput.value = obj.x + `,` + obj.y;
+};
+
+// удаление атрибута disabled
+const removeDisabledAttribute = (items)=> {
+  for (const element of items) {
+    element[items].disabled = false;
+  }
+};
+
+// Сравниваю количество комнат с количеством гостей
+const compareRoomsAndQuests = () => {
+  const numberRooms = parseInt(numberRoomsSelect.value, 10);
+  const numberQuests = parseInt(numberQuestsSelect.value, 10);
+  let mismatch = ``;
+  if (numberRooms === 1 && numberQuests !== 1) {
+    mismatch = `1 комната - для 1 гостя`;
+  } else if (numberRooms === 2 && (numberQuests !== 1 && numberQuests !== 2)) {
+    mismatch = `2 комнаты — для 2 гостей или для 1 гостя`;
+  } else if (numberRooms === 3 && (numberQuests !== 1 && numberQuests !== 2 && numberQuests !== 3)) {
+    mismatch = `3 комнаты — для 3 гостей, для 2 гостей или для 1 гостя`;
+  } else if (numberRooms === 100 && numberQuests !== 0) {
+    mismatch = `100 комнат — не для гостей`;
+  }
+  return mismatch;
+};
+
+// функция активации страницы
+const activatePage = () =>{
+  activeMap();
+  fillMap(posts);
+  createCard(posts[0]);
+  formActivation();
+};
+
+mainPin.addEventListener(`click`, ()=> {
+  activatePage();
+});
+
+formSubmit.addEventListener(`click`, ()=> {
+  // evt.preventDefault();
+  numberQuestsSelect.setCustomValidity(compareRoomsAndQuests());
+  numberQuestsSelect.reportValidity();
+});
+
+fillAddressInput(getMainPinPosition());
