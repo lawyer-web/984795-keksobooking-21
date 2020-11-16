@@ -1,5 +1,7 @@
 'use strict';
 
+// Task 1
+
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 
 const TIMES = [`12:00`, `13:00`, `14:00`];
@@ -17,15 +19,15 @@ const map = document.querySelector(`.map`);
 const pinMap = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
-/* 1.Функция генерации случайного числа */
+//  Функция генерации случайного числа
 
 const getRandomInt = (min, max)=>Math.floor(Math.random() * (max - min + 1)) + min;
 
-/* 2.Функция выбора случайного элемента массива */
+//  Функция выбора случайного элемента массива
 
 const getRandomElement = (items)=>items[getRandomInt(0, items.length - 1)];
 
-/* 3. Функция перетасовки массива */
+//  Функция перетасовки массива
 
 const getMixArr = (items)=> {
   return items.slice().sort(function () {
@@ -33,7 +35,7 @@ const getMixArr = (items)=> {
   });
 };
 
-/* 4.Функция генерации объекта с объявлением */
+//  Функция генерации объекта с объявлением
 
 const Price = {
   MIN: 1000,
@@ -82,7 +84,7 @@ const generatePost = (number) => {
   return post;
 };
 
-//  5.Функция создания массива случайных объявлений
+//  Функция создания массива случайных объявлений
 const generatePosts = ()=> {
   const data = [];
   for (let i = 1; i <= 8; i++) {
@@ -92,12 +94,12 @@ const generatePosts = ()=> {
 };
 const posts = generatePosts();
 
-//  6. Функция переключения карты в активное состояние
+//   Функция переключения карты в активное состояние
 const activeMap = ()=> {
   map.classList.remove(`map--faded`);
 };
 
-//  7. Функция сoздания метки случайного объявления
+// Функция отрисовки метки случайного объявления
 const fillMap = ()=> {
   const pinsFragment = document.createDocumentFragment();
   for (const post of posts) {
@@ -110,7 +112,7 @@ const fillMap = ()=> {
   pinMap.appendChild(pinsFragment);
 };
 
-// Второе задание
+// Task-2
 
 //  Новый элемент с заданным атрибутом class
 const createElem = (elemName, elemClass)=> {
@@ -174,10 +176,12 @@ const createFeautures = (items)=> {
 const fillCard = (obj) =>{
   const defaultCard = document.querySelector(`#card`).content.querySelector(`.map__card`);
   const postCard = defaultCard.cloneNode(true);
-
+  // кнопкa закрытия карточки
+  const cardClose = postCard.querySelector(`.popup__close`);
   //  Блок для фотографий
   const album = postCard.querySelector(`.popup__photos`);
-  album.textContent = ` `;
+  // очищения блока для фото
+  album.textContent = ``;
 
   //  Блок для списка опций
   const feauturesList = postCard.querySelector(`.popup__features `);
@@ -192,14 +196,17 @@ const fillCard = (obj) =>{
   postCard.querySelector(`.popup__description`).textContent = obj.offer.description;
   album.appendChild(createAlbum(obj.offer.photos));
   postCard.querySelector(`.popup__avatar`).setAttribute(`src`, obj.author.avatar);
+  // закрытие карточки
+  cardClose.addEventListener(`click`, onCardCloseClick);
   return postCard;
 };
 //  Отрисовывает карточку объявления (Метод отрисовки карточки)
 const createCard = (obj)=> {
   pinMap.parentNode.insertBefore(fillCard(obj), pinMap.nextSibling);
+  document.addEventListener(`keydown`, onCardEscPress);
 };
 
-// Третье задание
+// Task 3
 const MAIN_PIN_WIDTH = 62;
 const MAIN_PIN_HEIGHT = 62;
 const TAIL_OF_MAIN_PIN_HEIGHT = 22;
@@ -220,7 +227,7 @@ const formDisabledElements = form.querySelectorAll(`[disabled]`);
 const numberRoomsSelect = document.querySelector(`#room_number`);
 
 // количество гостей(мест)
-const numberQuestsSelect = document.querySelector(`#capacity`);
+const numberGestsSelect = document.querySelector(`#capacity`);
 
 // input для ввода адреса
 const adressInput = document.querySelector(`#address`);
@@ -256,24 +263,24 @@ const removeDisabledAttribute = (items)=> {
   }
 };
 
-// Сравниваю количество комнат с количеством гостей
-const compareRoomsAndQuests = () => {
+// сравниваю количество комнат с количеством гостей
+const compareRoomsAndGests = () => {
   const numberRooms = parseInt(numberRoomsSelect.value, 10);
-  const numberQuests = parseInt(numberQuestsSelect.value, 10);
+  const numberGests = parseInt(numberGestsSelect.value, 10);
   let mismatch = ``;
-  if (numberRooms === 1 && numberQuests !== 1) {
+  if (numberRooms === 1 && numberGests !== 1) {
     mismatch = `1 комната - для 1 гостя`;
-  } else if (numberRooms === 2 && (numberQuests !== 1 && numberQuests !== 2)) {
+  } else if (numberRooms === 2 && (numberGests !== 1 && numberGests !== 2)) {
     mismatch = `2 комнаты — для 2 гостей или для 1 гостя`;
-  } else if (numberRooms === 3 && (numberQuests !== 1 && numberQuests !== 2 && numberQuests !== 3)) {
+  } else if (numberRooms === 3 && (numberGests !== 1 && numberGests !== 2 && numberGests !== 3)) {
     mismatch = `3 комнаты — для 3 гостей, для 2 гостей или для 1 гостя`;
-  } else if (numberRooms === 100 && numberQuests !== 0) {
+  } else if (numberRooms === 100 && numberGests !== 0) {
     mismatch = `100 комнат — не для гостей`;
   }
   return mismatch;
 };
 
-// функция активации страницы
+// активирую страницу
 const activatePage = () =>{
   activeMap();
   fillMap(posts);
@@ -286,9 +293,75 @@ mainPin.addEventListener(`click`, ()=> {
 });
 
 formSubmit.addEventListener(`click`, ()=> {
-  // evt.preventDefault();
-  numberQuestsSelect.setCustomValidity(compareRoomsAndQuests());
-  numberQuestsSelect.reportValidity();
+  numberGestsSelect.setCustomValidity(compareRoomsAndGests());
+  numberGestsSelect.reportValidity();
+  inputPriceSelect.setCustomValidity(matchTypesAndPrice());
+  inputPriceSelect.reportValidity();
 });
 
 fillAddressInput(getMainPinPosition());
+
+//  Task-4
+
+const ESC_KEYCODE = 27;
+
+const inputPriceSelect = form.querySelector(`#price`);
+const typeOfHouseSelect = form.querySelector(`#type`);
+const timeInSelect = form.querySelector(`#timein`);
+const timeOutSelect = form.querySelector(`#timeout`);
+
+// нахожу карточку и удаляю её.
+const removeCard = () => {
+  const card = map.querySelector(`.map__card`);
+  card.remove();
+  document.removeEventListener(`keydown`, onCardEscPress);
+};
+
+// удаляю карточку при нажатии на кнопку закрытия
+const onCardCloseClick = ()=> {
+  removeCard();
+};
+
+//  удаляю карточку при нажатии ESC
+const onCardEscPress = (evt) => {
+  if (evt.keyCode === ESC_KEYCODE) {
+    removeCard();
+  }
+};
+
+// соотношение минимальной цены за ночь с типом жилья
+const matchTypesAndPrice = () => {
+  const typeOfHouse = typeOfHouseSelect.value;
+  const inputPrice = parseInt(inputPriceSelect.value, 10);
+  let minPrice = ``;
+  if (typeOfHouse === `bungalo` && inputPrice < 0) {
+    minPrice = `минимальная цена за ночь 0`;
+  } else if (typeOfHouse === `flat` && inputPrice < 1000) {
+    minPrice = `минимальная цена за ночь 1 000`;
+  } else if (typeOfHouse === `house` && inputPrice < 5000) {
+    minPrice = `минимальная цена 5 000`;
+  } else if (typeOfHouse === `palace` && inputPrice < 10000) {
+    minPrice = `минимальная цена 10 000`;
+  }
+  return minPrice;
+};
+
+//   изменяю цену за ночь
+const onTypeSelectChange = () => {
+  let minPrice = matchTypesAndPrice();
+  inputPriceSelect.placeholder = minPrice;
+  inputPriceSelect.min = minPrice;
+};
+
+// изменяю время заезда и выезда
+const onTimeSelectChange = (evt) => {
+  if (evt.target === timeInSelect) {
+    timeOutSelect.value = timeInSelect.value;
+  } else {
+    timeInSelect.value = timeOutSelect.value;
+  }
+};
+
+typeOfHouseSelect.addEventListener(`change`, onTypeSelectChange);
+timeInSelect.addEventListener(`change`, onTimeSelectChange);
+timeOutSelect.addEventListener(`change`, onTimeSelectChange);
